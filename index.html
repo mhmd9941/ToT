@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>For My Cutie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        :root { --pink1: #ff99cc; --pink2: #ff80b3; --pink3: #ff66a3; }
+        
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #ff99cc, #ff80b3, #ff66a3, #ff99cc);
+            background-size: 400% 400%;
+            animation: gradientMove 8s ease infinite;
+            text-align: center;
+            overflow-x: hidden;
+            color: #2c2c2c;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            bottom: -20px;
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: floatStar linear forwards;
+            pointer-events: none;
+            text-shadow: 0 0 4px rgba(255,255,255,0.8);
+        }
+
+        @keyframes floatStar {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        #loading { position: fixed; inset: 0; background: linear-gradient(135deg, #e65c8c, #cc5280); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: .8s; }
+        .loaderHeart { font-size: 80px; animation: pulse .8s infinite alternate; color: white; }
+        .loading-text { color: white; font-weight: bold; margin-top: 10px; font-size: 1.5rem; font-family: 'Cairo', sans-serif; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
+        #questionBox { display: none; position: fixed; inset: 0; background: linear-gradient(135deg, #e6739f, #cc6699); z-index: 9000; align-items: center; justify-content: center; }
+        .question { padding: 50px 60px; text-align: center; position: relative; font-family: 'Press Start 2P', cursive; background: rgba(255,255,255,0.25); border-radius: 30px; backdrop-filter: blur(6px); }
+        .ring { font-size: 60px; animation: floatRing 2s infinite ease-in-out; }
+        @keyframes floatRing { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .qText { color: #fff0f5; font-size: 1rem; margin-bottom: 20px; font-family: 'Press Start 2P', cursive; line-height: 1.5; text-shadow: 1px 1px 0 #b34e7a; }
+        .qBtns { position: relative; height: 80px; }
+        .qBtns button { margin: 10px; padding: 15px 30px; background: #ff6fa8; font-family: 'Press Start 2P', cursive; font-size: 1rem; cursor: pointer; border: none; border-radius: 10px; color: white; box-shadow: 0 3px 0 #a13b64; transition: 0.1s; }
+        .qBtns button:active { transform: translateY(2px); box-shadow: 0 1px 0 #a13b64; }
+        #noBtn { position: absolute; transition: none; }
+        .warning { color: #fff0c0; font-weight: bold; margin-top: 10px; font-family: 'Press Start 2P', cursive; font-size: 1.1rem; text-shadow: 1px 1px 0 #b14a76; }
+        .container { padding: 40px 20px; max-width: 800px; margin: auto; display: none; position: relative; z-index: 10; }
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); color: white; text-shadow: 3px 3px 12px rgba(170, 50, 90, 0.7); animation: float 3s infinite; }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        
+        #typingMessage {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff0f5;
+            text-shadow: 0 1px 2px #b34e7a;
+            min-height: 80px;
+            margin-bottom: 30px;
+            background: rgba(255,220,240,0.2);
+            backdrop-filter: blur(2px);
+            border-radius: 35px;
+            padding: 12px;
+        }
+        
+        .cake { width: 200px; height: 130px; margin: 80px auto 10px auto; position: relative; cursor: pointer; filter: drop-shadow(0 15px 20px rgba(0, 0, 0, .25)); z-index: 10; }
+        .layer { position: absolute; width: 100%; height: 40px; border-radius: 10px; box-shadow: inset 0 5px rgba(255, 255, 255, .4); }
+        .top { top: 0; background: #ff99c2; z-index: 3; }
+        .middle { top: 30px; background: #ff6fa8; z-index: 2; }
+        .bottom { top: 60px; background: #e6518c; z-index: 1; }
+        .candles { display: none; position: absolute; top: -35px; width: 100%; justify-content: center; gap: 10px; }
+        .candle { width: 8px; height: 35px; background: white; position: relative; border-radius: 2px; }
+        .flame { width: 12px; height: 18px; background: #ff9d00; border-radius: 50% 50% 20% 20%; position: absolute; top: -15px; left: -2px; animation: flicker .5s infinite alternate; box-shadow: 0 0 10px #ff9d00; }
+        @keyframes flicker { 0% { opacity: .8; transform: scale(1); } 100% { opacity: 1; transform: scale(1.2); } }
+        #lyricsBox { font-family: 'Press Start 2P', cursive; color: #fff3e0; background: rgba(156, 62, 102, 0.55); backdrop-filter: blur(4px); font-size: 0.65rem; margin: 20px auto; padding: 15px; line-height: 2; max-width: 600px; display: none; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border: 1px solid rgba(255,215,235,0.6); }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 40px 0; }
+        .gallery img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .gallery img:hover {
+            transform: translateY(-10px) rotate(3deg);
+            box-shadow: 0 0 25px #ffb3d9, 0 5px 25px rgba(230, 80, 130, 0.6);
+            border-color: #66ffde;
+        }
+        
+        .envelope-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 40px auto 10px auto;
+        }
+        .envelope {
+            width: 150px;
+            height: 100px;
+            background: #ff80b3;
+            cursor: pointer;
+            border-radius: 0 0 10px 10px;
+            position: relative;
+            transition: 0.2s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .envelope::after {
+            content: "💌";
+            font-size: 40px;
+            line-height: 100px;
+            display: block;
+        }
+        .envelope.locked { filter: grayscale(0.2); opacity: 0.85; }
+        .envelope.unlocked { filter: none; opacity: 1; }
+        .lock-icon {
+            position: absolute;
+            top: -15px;
+            right: -10px;
+            font-size: 28px;
+            background: rgba(255,248,240,0.95);
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: 0.2s;
+            z-index: 20;
+        }
+        .envelope-hint {
+            color: #fff0e6;
+            font-weight: bold;
+            margin-bottom: 40px;
+            font-size: 1rem;
+            background: rgba(190, 70, 110, 0.65);
+            backdrop-filter: blur(3px);
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .tulip { position: fixed; bottom: -20px; font-size: 22px; animation: floatUp 6s linear forwards; pointer-events: none; z-index: 15; }
+        @keyframes floatUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-110vh); opacity: 0; } }
+        .celebrate-btn { background: #ff99cc; color: #3b1e2c; border: 4px solid #ff4fa3; padding: 20px 30px; border-radius: 10px; font-family: 'Press Start 2P', cursive; font-size: 0.9rem; cursor: pointer; transition: .3s; margin-bottom: 50px; box-shadow: 5px 5px 0px #c94f82; z-index: 10; position: relative; font-weight: bold; }
+        .celebrate-btn:hover { background: #ff70ae; transform: translate(-2px, -2px); box-shadow: 7px 7px 0px #b33b6e; color: white; }
+        #stagesScreen { display: none; position: fixed; inset: 0; background: #cc6699; z-index: 9999; align-items: center; justify-content: center; flex-direction: column; }
+        .pixel-text { font-family: 'Press Start 2P', cursive; font-weight: bold; font-size: 1.5rem; color: #fff0f0; line-height: 1.6; padding: 20px; text-shadow: 2px 2px 0 #9e3e68; }
+
+        .couple-wrapper { display: none; flex-direction: column; align-items: center; margin: 30px auto; padding: 20px; position: relative; z-index: 10; }
+        .couple-wrapper.show { display: flex; }
+        .speech-container { width: 100%; display: flex; justify-content: flex-start; padding-right: 80px; margin-bottom: 25px; min-height: 20px; }
+        .speech-bubble { background: linear-gradient(135deg, #fff9fb, #ffeef4); border-radius: 24px; padding: 18px 22px; max-width: 260px; min-width: 190px; box-shadow: 0 12px 22px rgba(199, 70, 110, 0.3), 0 3px 10px rgba(0,0,0,0.1); border: 2.5px solid #ffb3d9; opacity: 0; transform: scale(0.8) translateY(10px); transition: all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55); position: relative; }
+        .speech-bubble.show { opacity: 1; transform: scale(1) translateY(0); }
+        .speech-bubble::before { content:''; position:absolute; bottom:-15px; left:25px; border-left:12px solid transparent; border-right:12px solid transparent; border-top:18px solid #ffb3d9; }
+        .speech-bubble::after { content:''; position:absolute; bottom:-10px; left:28px; border-left:9px solid transparent; border-right:9px solid transparent; border-top:14px solid #fff9fb; }
+        .bubble-heart { position:absolute; font-size:10px; animation:bubbleHeartFloat 2s ease-in-out infinite; }
+        .bubble-heart.h1 { top:-6px; left:15px; }
+        .bubble-heart.h2 { top:2px; left:3px; font-size:8px; animation-delay:0.3s; }
+        .bubble-heart.h3 { top:-4px; right:20px; font-size:9px; animation-delay:0.6s; }
+        @keyframes bubbleHeartFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-4px) scale(1.1)} }
+        .speech-text { font-family:'Cairo',sans-serif; font-size:0.95rem; font-weight:700; color:#b33b6e; line-height:1.7; text-align:center; direction:rtl; }
+        .typing-cursor { display:inline-block; width:2px; height:1em; background:#b33b6e; margin-right:2px; animation:cursorBlink 0.8s infinite; vertical-align:middle; }
+        @keyframes cursorBlink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+
+        .couple-container { display:flex; justify-content:center; align-items:flex-end; gap:25px; animation:coupleAppear 0.8s ease-out; position:relative; }
+        @keyframes coupleAppear { from{opacity:0;transform:scale(0.5) translateY(50px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+        /* BOY - HAIR CURLY SHORT + BLACK T-SHIRT */
+        .boy-character { position:relative; width:130px; height:210px; animation:boyBounce 2s ease-in-out infinite; }
+        @keyframes boyBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        .boy-head { width:70px; height:75px; background:linear-gradient(180deg,#fce4dc,#f5d5cb); border-radius:50%; position:absolute; top:15px; left:35px; z-index:5; }
+        /* شعر كيرلي قصير - كثيف + تم إضافة curl19 و curl20 لسد الفجوة في النص */
+        .boy-hair { position:absolute; top:-5px; left:22px; width:95px; height:65px; z-index:6; }
+        .curl { position:absolute; background:#2c1810; border-radius:50%; box-shadow:inset -2px -2px 4px rgba(0,0,0,0.3); }
+        .curl1{width:26px;height:26px;top:5px;left:8px}.curl2{width:30px;height:30px;top:0;left:32px}.curl3{width:26px;height:26px;top:5px;right:8px}.curl4{width:24px;height:24px;top:22px;left:2px}.curl5{width:24px;height:24px;top:22px;right:2px}.curl6{width:22px;height:26px;top:38px;left:-2px}.curl7{width:20px;height:24px;top:48px;left:0px}.curl8{width:22px;height:26px;top:38px;right:-2px}.curl9{width:20px;height:24px;top:48px;right:0px}.curl10{width:18px;height:20px;top:10px;left:20px}.curl11{width:18px;height:20px;top:10px;right:20px}.curl12{width:22px;height:22px;top:18px;left:14px}.curl13{width:22px;height:22px;top:18px;right:14px}.curl14{width:16px;height:20px;top:45px;left:10px}.curl15{width:16px;height:20px;top:45px;right:10px}.curl16{width:12px;height:12px;top:28px;left:28px}.curl17{width:14px;height:14px;top:25px;left:40px}.curl18{width:12px;height:12px;top:28px;right:28px}
+        /* curls الجديدة لسد الفجوة في منتصف الجبهة */
+        .curl19{width:22px;height:22px;top:12px;left:48px;background:#2c1810;border-radius:50%;box-shadow:inset -2px -2px 4px rgba(0,0,0,0.3);}
+        .curl20{width:20px;height:20px;top:5px;left:53px;background:#2c1810;border-radius:50%;box-shadow:inset -2px -2px 4px rgba(0,0,0,0.3);}
+        .boy-face{position:absolute;width:100%;height:100%}
+        .boy-eye { width: 8px; height: 10px; background: #1a1209; border-radius: 50%; position: absolute; top: 28px; }
+        .boy-eye.left { left: 20px; right: auto; }
+        .boy-eye.right { left: 38px; right: auto; }
+        .boy-eye::before{ content:''; position:absolute; width:3px; height:3px; background:white; border-radius:50%; top:2px; left:2px; }
+        .boy-eye::after{ content:''; position:absolute; width:1.5px; height:1.5px; background:white; border-radius:50%; top:5px; left:1px; }
+        .boy-eyelash{position:absolute;top:23px;width:12px;height:6px;border:2px solid #1a1209;border-color:#1a1209 transparent transparent transparent;border-radius:50% 50% 0 0}
+        .boy-eyelash.left{left:24px;}.boy-eyelash.right{left:8px;}
+        .boy-eyebrow { width: 14px; height: 3px; background: #3a2418; border-radius: 5px; position: absolute; top: 21px; }
+        .boy-eyebrow.left { left: 17px; transform: rotate(-4deg); }
+        .boy-eyebrow.right { left: 36px; transform: rotate(4deg); }
+        .boy-blush { width: 10px; height: 6px; background: rgba(255, 110, 130, 0.65); border-radius: 50%; position: absolute; top: 38px; }
+        .boy-blush.left { left: 15px; }.boy-blush.right { right: 15px; }
+        .boy-smile { width: 24px; height: 10px; border: 3px solid #d4736a; border-color: transparent transparent #d4736a transparent; border-radius: 0 0 24px 24px; position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); }
+        
+        /* جذع الولد: تيشرت أسود + بنطلون جينز فاتح */
+        .boy-body{position:absolute;top:82px;left:30px;width:75px;height:90px}
+        /* تيشيرت أسود سادة */
+        .black-shirt{width:74px;height:72px;background:#1a1a1a; border-radius: 10px 12px 8px 8px; position:absolute; top:0; left:0; box-shadow: inset 0 2px 5px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2); border: 1px solid #2d2d2d;}
+        .shirt-collar{width:34px;height:16px;background:#111111;border-radius:0 0 10px 10px;position:absolute;top:-5px;left:50%;transform:translateX(-50%); border-top: 1px solid #333;}
+        /* الأذرع باللون الأسود */
+        .boy-arm-left{width:18px;height:50px;background:#1a1a1a;border-radius:10px;position:absolute;top:5px;left:-14px;transform:rotate(35deg);transform-origin:top center;z-index:10; border: 1px solid #2d2d2d;}
+        .boy-arm-right{width:18px;height:48px;background:#1a1a1a;border-radius:10px;position:absolute;top:8px;right:-10px;transform:rotate(-15deg);z-index:1; border: 1px solid #2d2d2d;}
+        .boy-hand{width:15px;height:15px;background:#fce4dc;border-radius:50%;position:absolute;bottom:-5px;left:1px}
+        .bouquet { position: absolute; bottom: -5px; left: -15px; z-index: 11; transform: rotate(180deg) scale(0.95); animation: bouquetOffer 2s ease-in-out infinite; }
+        @keyframes bouquetOffer { 0%,100%{transform: rotate(180deg) scale(0.95);} 50%{transform: rotate(180deg) scale(1);} }
+        .bouquet-wrap { width: 35px; height: 42px; background: linear-gradient(135deg, #ffd1dc, #ffb6c1); clip-path: polygon(0% 0%, 100% 0%, 70% 100%, 30% 100%); position: relative; border-radius: 0 0 5px 5px; box-shadow: 0 3px 10px rgba(0,0,0,0.15); }
+        .bouquet-ribbon { width: 12px; height: 18px; background: #ff69b4; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); border-radius: 0 0 5px 5px; }
+        .bouquet-ribbon::before, .bouquet-ribbon::after { content: ''; position: absolute; width: 14px; height: 12px; background: #ff69b4; border-radius: 50%; top: -5px; }
+        .bouquet-ribbon::before { left: -10px; transform: rotate(-20deg); }
+        .bouquet-ribbon::after { right: -10px; transform: rotate(20deg); }
+        .flower { position: absolute; font-size: 18px; filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2)); }
+        .flower1 { top: -22px; left: 2px; }.flower2 { top: -30px; left: 12px; }.flower3 { top: -20px; right: 2px; }.flower4 { top: -34px; left: 8px; font-size: 14px; }.flower5 { top: -26px; left: -2px; font-size: 14px; }.flower6 { top: -28px; right: -2px; font-size: 13px; }
+        /* بنطلون جينز أزرق فاتح */
+        .boy-jeans{width:68px;height:52px;background:linear-gradient(180deg,#7ec8e0,#6cb0c9);border-radius:6px 6px 4px 4px;position:absolute;top:67px;left:3px;}
+        .jeans-pocket{width:14px;height:12px;background:#5f9eb5;border-radius:3px;position:absolute;top:12px;left:5px;border:1px solid #4892aa}
+        .jeans-pocket-right{width:14px;height:12px;background:#5f9eb5;border-radius:3px;position:absolute;top:12px;right:5px;border:1px solid #4892aa}
+        .boy-legs{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+        .boy-leg{width:22px;height:50px;background:linear-gradient(180deg,#7ec8e0,#6cb0c9);border-radius:3px 3px 0 0;position:relative}
+        .boy-shoe{width:28px;height:14px;background:linear-gradient(180deg,#fff,#f5f5f5);border-radius:8px 12px 6px 6px;position:absolute;bottom:0;left:-3px;box-shadow:0 2px 5px rgba(0,0,0,0.2);border:1px solid #e0e0e0}
+        .boy-shoe-detail{width:12px;height:4px;background:#e74c3c;position:absolute;top:5px;left:50%;transform:translateX(-50%);border-radius:2px}
+        .boy-shoe-sole{width:28px;height:4px;background:#ddd;position:absolute;bottom:0;left:0;border-radius:0 0 6px 6px}
+        
+        /* GIRL - بدون حجاب، شعر أسود طول الكتف، تيشرت أسود وجينز */
+        .girl-character{position:relative;width:120px;height:210px;animation:girlBounce 2s ease-in-out infinite 0.2s}
+        @keyframes girlBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        .girl-hair { position: absolute; top: 0px; left: 22px; width: 75px; height: 85px; z-index: 4; }
+        .hair-base { position: absolute; width: 70px; height: 68px; background: #1e1a15; border-radius: 50% 45% 50% 45%; top: 2px; left: 0px; box-shadow: inset -3px -2px 0px #0f0d0a, 5px 8px 10px rgba(0,0,0,0.1); }
+        .hair-side-left { position: absolute; width: 28px; height: 55px; background: #1e1a15; top: 32px; left: -8px; border-radius: 40% 20% 45% 35%; transform: rotate(10deg); box-shadow: -2px 4px 5px rgba(0,0,0,0.1); }
+        .hair-side-right { position: absolute; width: 30px; height: 60px; background: #1e1a15; top: 32px; right: -8px; border-radius: 20% 40% 35% 45%; transform: rotate(-10deg); box-shadow: 2px 4px 6px rgba(0,0,0,0.1); }
+        .hair-back { position: absolute; width: 66px; height: 40px; background: #1e1a15; bottom: -12px; left: 3px; border-radius: 30% 30% 45% 45%; z-index: 2; opacity: 0.9; }
+        .hair-strand { position: absolute; width: 18px; height: 28px; background: #2a241e; bottom: -15px; left: 28px; border-radius: 40%; z-index: 2; }
+        .hair-strand2 { left: 45px; bottom: -17px; width: 20px; height: 30px; }
+        .girl-face{width:52px;height:52px;background:linear-gradient(180deg,#fce4dc,#f8d5ca);border-radius:50%;position:absolute;top:22px;left:50%;transform:translateX(-50%);z-index:5}
+        .girl-eye{width:8px;height:10px;background:#1a1209;border-radius:50%;position:absolute;top:16px}
+        .girl-eye.left{right:25px}.girl-eye.right{right:9px}
+        .girl-eye::before{content:'';position:absolute;width:3px;height:3px;background:white;border-radius:50%;top:2px;left:2px}
+        .girl-eye::after{content:'';position:absolute;width:1.5px;height:1.5px;background:white;border-radius:50%;top:5px;left:1px}
+        .girl-eyelash{position:absolute;top:11px;width:12px;height:6px;border:2px solid #1a1209;border-color:#1a1209 transparent transparent transparent;border-radius:50% 50% 0 0}
+        .girl-eyelash.left{right:24px}.girl-eyelash.right{right:8px}
+        .girl-blush{width:10px;height:6px;background:rgba(255,110,130,0.65);border-radius:50%;position:absolute;top:26px}
+        .girl-blush.left{right:29px}.girl-blush.right{right:3px}
+        .girl-smile { width: 18px; height: 8px; border: 3px solid #e07070; border-color: transparent transparent #e07070 transparent; border-radius: 0 0 18px 18px; position: absolute; bottom: 10px; right: 13px; }
+        /* لبس الفتاة: توب أسود + جينز فاتح */
+        .girl-body { position: absolute; top: 85px; left: 18px; width: 84px; height: 115px; transform: translateY(0px); transition: transform 0.2s ease; }
+        .black-top { width: 68px; height: 64px; background: #1a1a1a; border-radius: 24px 24px 12px 12px; position: absolute; top: 7px; left: 8px; box-shadow: inset 0 2px 5px rgba(255,255,255,0.08), 0 3px 6px rgba(0,0,0,0.2); }
+        .black-shirt-over { width: 70px; height: 68px; background: #222; position: absolute; top: 4px; left: 7px; border-radius: 20px 20px 12px 12px; z-index: 2; border-top: 2px solid #3a3a3a; }
+        .collar-black { width: 26px; height: 12px; background: #111; position: absolute; top: 0px; left: 50%; transform: translateX(-50%); border-radius: 0 0 8px 8px; z-index: 7; }
+        .girl-jeans{width:55px;height:50px;background:linear-gradient(180deg,#7ec8e0,#6cb0c9);border-radius:8px 8px 0 0;position:absolute;top:73px;left:15px}
+        .girl-arm-left{width:17px;height:48px;background:#1a1a1a;border-radius:10px;position:absolute;top:15px;left:-2px;transform:rotate(15deg);z-index:3}
+        .girl-arm-right{width:17px;height:48px;background:#1a1a1a;border-radius:10px;position:absolute;top:13px;right:10px;transform:rotate(-18deg);z-index:3}
+        .girl-hand{width:14px;height:14px;background:#fce4dc;border-radius:50%;position:absolute;bottom:-5px;left:1px}
+        .girl-legs { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) translateY(0px); display: flex; gap: 6px; transition: transform 0.2s ease; }
+        .girl-leg{width:18px;height:45px;background:linear-gradient(180deg,#7ec8e0,#6cb0c9);border-radius:3px 3px 0 0;position:relative}
+        .girl-shoe{width:22px;height:12px;background:linear-gradient(180deg,#fff,#f5f5f5);border-radius:10px 10px 8px 8px;position:absolute;bottom:0;left:-2px;border:1px solid #e0e0e0}
+        .shoe-detail{width:8px;height:3px;background:#ff69b4;position:absolute;top:4px;left:50%;transform:translateX(-50%);border-radius:2px}
+        .love-hearts{position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);z-index:20;width:60px;height:100px}
+        .floating-heart{position:absolute;animation:heartFloat 3s ease-in-out infinite}
+        .floating-heart:nth-child(1){left:15px;top:0;font-size:18px}.floating-heart:nth-child(2){left:30px;top:25px;animation-delay:0.5s;font-size:14px}.floating-heart:nth-child(3){left:8px;top:40px;animation-delay:1s;font-size:16px}.floating-heart:nth-child(4){left:25px;top:60px;animation-delay:1.5s;font-size:12px}.floating-heart:nth-child(5){left:35px;top:15px;animation-delay:0.3s;font-size:13px}.floating-heart:nth-child(6){left:5px;top:70px;animation-delay:0.8s;font-size:15px}
+        @keyframes heartFloat{0%,100%{transform:translateY(0) scale(1);opacity:0.9}50%{transform:translateY(-15px) scale(1.2);opacity:1}}
+        .couple-wrapper.show .girl-body,
+        .couple-wrapper.show .girl-legs { transform: translateY(-2px); }
+        .couple-wrapper.show .girl-legs { transform: translateX(-50%) translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div id="stars-container" class="stars-container"></div>
+    
+    <div id="loading"><div class="loaderHeart">❤</div><div class="loading-text">...Loading something special for you Tutaaaaa</div></div>
+    
+    <div id="questionBox"><div class="question"><div class="ring">💍</div><h2 style="font-family:'Press Start 2P',cursive;">؟</h2><p class="qText">ToT, Will you accept this little surprise</p><div class="qBtns"><button onclick="accept()">Yes</button><button id="noBtn" onmouseover="moveNo()">No</button></div><div id="warn" class="warning"></div></div></div>
+    
+    <div id="stagesScreen"><div id="stage1" style="display:block;"><img src="Screenshot 2026-03-06 185449.png" style="max-width:50%;border-radius:20px; box-shadow: 0 0 0 4px #ffb3d9;"><p class="pixel-text">I knew it, you are literally obsessed with me</p></div><div id="stage2" style="display:none;" class="pixel-text">   ههه هدخلك خلاص   </div></div>
+    
+    <audio id="bgMusic"><source src="mix_57s (audio-joiner.com).mp3" type="audio/mpeg"></audio>
+    <audio id="letterMusic" loop><source src="Interlude - بوسة (online-video-cutter.com).mp4" type="audio/mpeg"></audio>
+
+    <div class="container" id="mainContent">
+        <h1>🎂Happy Birthday Tottt </h1>
+        <div id="typingMessage"></div>
+        <div class="cake" onclick="lightCandles()"><div class="layer top"></div><div class="layer middle"></div><div class="layer bottom"></div><div class="candles" id="candles"></div></div>
+        <p style="color:#fff0f0; font-weight:bold;margin-top:5px; text-shadow:0 0 3px #b34e7a;">نوري الشمع يا توت 🕯</p>
+        <div id="lyricsBox"></div>
+        <div class="gallery"><img src="IMG-20250617-WA00322.jpg"><img src="IMG-20260331-WA00533.jpg"><img src="IMG-20260504-WA0005.jpg"><img src="ظظ.jpg"></div>
+        
+        <div class="envelope-wrapper">
+            <div class="lock-icon" id="lockIcon">🔒</div>
+            <div class="envelope" id="envelope" onclick="openLetter()"></div>
+        </div>
+        <div class="envelope-hint" id="envelopeHint">نوري الشمع و الاغنية تخلص هتقدري تفتحي الظرف يا توتا</div>
+        
+        <div class="couple-wrapper" id="coupleWrapper">
+            <div class="speech-container"><div class="speech-bubble" id="speechBubble"><span class="bubble-heart h1">💕</span><span class="bubble-heart h2">✨</span><span class="bubble-heart h3">💗</span><div class="speech-text" id="speechText"></div></div></div>
+            
+            <div class="couple-container">
+                <!-- الولد: شعر كيرلي معدل (أضيف curl19,20) + تيشيرت أسود -->
+                <div class="boy-character"><div class="boy-hair"><div class="curl curl1"></div><div class="curl curl2"></div><div class="curl curl3"></div><div class="curl curl4"></div><div class="curl curl5"></div><div class="curl curl6"></div><div class="curl curl7"></div><div class="curl curl8"></div><div class="curl curl9"></div><div class="curl curl10"></div><div class="curl curl11"></div><div class="curl curl12"></div><div class="curl curl13"></div><div class="curl curl14"></div><div class="curl curl15"></div><div class="curl curl16"></div><div class="curl curl17"></div><div class="curl curl18"></div><div class="curl curl19"></div><div class="curl curl20"></div></div><div class="boy-head"><div class="boy-face"><div class="boy-eyebrow left"></div><div class="boy-eyebrow right"></div><div class="boy-eye left"></div><div class="boy-eye right"></div><div class="boy-blush left"></div><div class="boy-blush right"></div><div class="boy-smile"></div></div></div><div class="boy-body"><div class="black-shirt"><div class="shirt-collar"></div></div><div class="boy-jeans"><div class="jeans-pocket"></div><div class="jeans-pocket-right"></div></div><div class="boy-arm-left"><div class="boy-hand"></div><div class="bouquet"><div class="flower flower1">🌹</div><div class="flower flower2">🌹</div><div class="flower flower3">🌸</div><div class="flower flower4">💮</div><div class="flower flower5">🪷</div><div class="flower flower6">💐</div><div class="bouquet-wrap"></div><div class="bouquet-ribbon"></div></div></div><div class="boy-arm-right"><div class="boy-hand"></div></div></div><div class="boy-legs"><div class="boy-leg"><div class="boy-shoe"><div class="boy-shoe-detail"></div><div class="boy-shoe-sole"></div></div></div><div class="boy-leg"><div class="boy-shoe"><div class="boy-shoe-detail"></div><div class="boy-shoe-sole"></div></div></div></div></div>
+                
+                <div class="love-hearts"><span class="floating-heart">💕</span><span class="floating-heart">💗</span><span class="floating-heart">💖</span><span class="floating-heart">❤️</span><span class="floating-heart">💝</span><span class="floating-heart">💓</span></div>
+                
+                <!-- البنت بدون حجاب، شعر أسود طول الكتف، تيشيرت أسود وجينز فاتح -->
+                <div class="girl-character">
+                    <div class="girl-hair">
+                        <div class="hair-base"></div>
+                        <div class="hair-side-left"></div>
+                        <div class="hair-side-right"></div>
+                        <div class="hair-back"></div>
+                        <div class="hair-strand"></div>
+                        <div class="hair-strand hair-strand2"></div>
+                    </div>
+                    <div class="girl-face">
+                        <div class="girl-eyelash left"></div>
+                        <div class="girl-eyelash right"></div>
+                        <div class="girl-eye left"></div>
+                        <div class="girl-eye right"></div>
+                        <div class="girl-blush left"></div>
+                        <div class="girl-blush right"></div>
+                        <div class="girl-smile"></div>
+                    </div>
+                    <div class="girl-body">
+                        <div class="black-shirt-over"></div>
+                        <div class="black-top"></div>
+                        <div class="collar-black"></div>
+                        <div class="girl-jeans"></div>
+                        <div class="girl-arm-left"><div class="girl-hand"></div></div>
+                        <div class="girl-arm-right"><div class="girl-hand"></div></div>
+                    </div>
+                    <div class="girl-legs">
+                        <div class="girl-leg"><div class="girl-shoe"><div class="shoe-detail"></div></div></div>
+                        <div class="girl-leg"><div class="girl-shoe"><div class="shoe-detail"></div></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="celebrate-btn" onclick="celebrate()">Celebrate Ya Tuta</button>
+    </div>
+
+    <script>
+        const text="    كل سنة و انتي طيبة يا حبيبتي.. بتمنالك سنة جميلة اشوفك فيها اكتر انسانة مبسوطة في الحياة و في احسن الأماكن🌹        ";
+        const lyrics="And if a double-decker bus crashes into us\nTo die by your side is such a heavenly way to die\nAnd if a ten tonne truck kills the both of us\nTo die by your side, well, the pleasure, the privilege is mine";
+        // الرسالة الجديدة التي طلبها المستخدم
+        const speechMessage=`بما انك عمرك ما حسستيني اني تقيل وكنتي دايما موجودة وقت ما احتاجت حد اكلمه وافضفضله ولما كنت بحكيلك عن مشاكلي كنتي بتتفهمي الموضوع ومش بتحسسيني اني عبء رغم اني كنت رغاي فشخ, حبيت ان عيد ميلادك ده يكون مميز او بمعنى اصح مختلف عن كل اعياد الميلاد اللي عشتيها قبل كدا ف حبيت تكون دي ذكرى لطيفة وتكون حاجة تفكرك باليوم ده وبرضه بمناسبة ان بقالنا سنة وشهرين مع بعض. ده غير ان ف كل المشاكل اللي حصلت كنت انت متفهمة وكان عاجبني انك ازاي بتتصرفي وعاقلة وفاهمة ازاي تتصرفي, ولما كنت بقولك على الحاجات الغلط الكتير اللي عملتها او المشاكل اللي وقعت فيها كنت واقفة معايا ومزودتيش الضغط عليا وبالعكس خففتيه, اتمنى حاجة زي كدا تفضل ذكرى كويسة لحد ان شاء الله اما اجي واخطبك ونبقى ف بيت واحد انا وانت, خلي بالك من نفسك, بحبك`;
+        
+        let isLyricsShown=false;
+        let isSpeechTyping=false;
+        let typingTimeout=null;
+        let starsInterval = null;
+        let isCakeMusicFinished = false;
+        let cakeActivated = false;
+
+        const cakeAudio = document.getElementById("bgMusic");
+        const letterAudio = document.getElementById("letterMusic");
+        const lockIcon = document.getElementById("lockIcon");
+        const envelopeDiv = document.getElementById("envelope");
+        const envelopeHint = document.getElementById("envelopeHint");
+
+        function updateLockUI() {
+            if (isCakeMusicFinished) {
+                lockIcon.innerHTML = "🔓";
+                envelopeDiv.classList.add("unlocked");
+                envelopeDiv.classList.remove("locked");
+                envelopeHint.innerHTML = "افتحي الظرف يا توووت 💌";
+            } else {
+                lockIcon.innerHTML = "🔒";
+                envelopeDiv.classList.add("locked");
+                envelopeDiv.classList.remove("unlocked");
+                envelopeHint.innerHTML = "نوري الشمع و الاغنية تخلص هتقدري تفتحي الظرف يا توووت 💌";
+            }
+        }
+
+        function onCakeMusicEnded() {
+            if (!cakeActivated) return;
+            isCakeMusicFinished = true;
+            updateLockUI();
+        }
+
+        function lightCandles() {
+            if (cakeActivated) return;
+            cakeActivated = true;
+            if (cakeAudio) {
+                cakeAudio.currentTime = 0;
+                cakeAudio.play().catch(e => console.log("Audio play error:", e));
+            }
+            const candleBox = document.getElementById("candles");
+            candleBox.style.display = "flex";
+            candleBox.innerHTML = "";
+            for (let i = 0; i < 7; i++) {
+                const c = document.createElement("div");
+                c.className = "candle";
+                c.innerHTML = '<div class="flame"></div>';
+                candleBox.appendChild(c);
+            }
+            const lyricsBox = document.getElementById("lyricsBox");
+            lyricsBox.style.display = "block";
+            typeMessage("lyricsBox", lyrics, 150);
+            isLyricsShown = true;
+            if (cakeAudio) {
+                cakeAudio.removeEventListener("ended", onCakeMusicEnded);
+                cakeAudio.addEventListener("ended", onCakeMusicEnded);
+            }
+        }
+
+        function playLetterMusic() {
+            if (cakeAudio && !cakeAudio.paused) {
+                cakeAudio.pause();
+                cakeAudio.currentTime = 0;
+            }
+            if (letterAudio) {
+                letterAudio.currentTime = 0;
+                letterAudio.play().catch(e => console.log("Audio play error:", e));
+            }
+        }
+
+        function stopLetterMusic() {
+            if (letterAudio && !letterAudio.paused) {
+                letterAudio.pause();
+                letterAudio.currentTime = 0;
+            }
+        }
+
+        function typeMessage(elementId, textToType, speed, callback) { let i = 0; const el = document.getElementById(elementId); el.innerHTML = ""; function type() { if (i < textToType.length) { el.innerHTML += textToType.charAt(i) === '\n' ? '<br>' : textToType.charAt(i); i++; setTimeout(type, speed); } else if (callback) callback(); } type(); }
+
+        function stopTyping() { isSpeechTyping = false; if (typingTimeout) { clearTimeout(typingTimeout); typingTimeout = null; } }
+
+        function typeSpeechBubble(textToType, speed) { let i = 0; const el = document.getElementById('speechText'); el.innerHTML = '<span class="typing-cursor"></span>'; function type() { if (!isSpeechTyping) return; if (i < textToType.length) { const currentText = el.innerHTML.replace('<span class="typing-cursor"></span>', ''); const newChar = textToType.charAt(i) === '\n' ? '<br>' : textToType.charAt(i); el.innerHTML = currentText + newChar + '<span class="typing-cursor"></span>'; i++; typingTimeout = setTimeout(type, speed); } else { typingTimeout = setTimeout(() => { if (isSpeechTyping) { el.innerHTML = el.innerHTML.replace('<span class="typing-cursor"></span>', ' 💖'); } }, 1000); } } type(); }
+
+        function createStar() {
+            const starContainer = document.getElementById('stars-container');
+            if (!starContainer) return;
+            const star = document.createElement('div');
+            star.className = 'star';
+            const starTypes = ['✨', '⭐', '🌟', '💫', '⚡', '🕯️', '❤️', '💖', '🌸', '🌹'];
+            star.innerHTML = starTypes[Math.floor(Math.random() * starTypes.length)];
+            const size = Math.random() * 1.5 + 0.8;
+            star.style.fontSize = size + 'rem';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.opacity = Math.random() * 0.5 + 0.2;
+            const duration = Math.random() * 6 + 4;
+            star.style.animationDuration = duration + 's';
+            star.style.animationDelay = Math.random() * 2 + 's';
+            starContainer.appendChild(star);
+            setTimeout(() => { if (star && star.remove) star.remove(); }, duration * 1000);
+        }
+
+        function startStars() {
+            if (starsInterval) clearInterval(starsInterval);
+            starsInterval = setInterval(() => {
+                if (document.getElementById('mainContent').style.display === 'block') {
+                    for (let i = 0; i < 2; i++) createStar();
+                }
+            }, 800);
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById("loading");
+                loader.style.opacity = "0";
+                setTimeout(() => {
+                    loader.style.display = "none";
+                    document.getElementById("questionBox").style.display = "flex";
+                }, 800);
+            }, 2000);
+        };
+
+        function accept() {
+            document.getElementById("questionBox").style.display = "none";
+            document.getElementById("stagesScreen").style.display = "flex";
+            setTimeout(() => {
+                document.getElementById("stage1").style.display = "none";
+                document.getElementById("stage2").style.display = "block";
+            }, 4000);
+            setTimeout(() => {
+                document.getElementById("stagesScreen").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+                typeMessage("typingMessage", text, 60);
+                startStars();
+            }, 7000);
+        }
+
+        function moveNo() {
+            const btn = document.getElementById("noBtn");
+            const x = Math.random() * 600 - 300;
+            const y = Math.random() * 400 - 200;
+            btn.style.transform = `translate(${x}px, ${y}px)`;
+            document.getElementById("warn").innerText = "وافقي يا رخمة يا اما مش هكمل ههه ";
+        }
+
+        function openLetter() {
+            if (!isCakeMusicFinished) {
+                envelopeHint.innerText = "⭐ استني لما الاغنية تخلص الاول يا توت ⭐";
+                setTimeout(() => {
+                    if (!isCakeMusicFinished) 
+                        envelopeHint.innerHTML = "نوري الشمع و الاغنية تخلص هتقدري تفتحي الظرف يا توت 💌";
+                    else 
+                        updateLockUI();
+                }, 2000);
+                return;
+            }
+            const wrapper = document.getElementById("coupleWrapper");
+            const speechBubble = document.getElementById("speechBubble");
+            const speechText = document.getElementById("speechText");
+            if (wrapper.classList.contains("show")) {
+                stopLetterMusic();
+                stopTyping();
+                speechBubble.classList.remove("show");
+                wrapper.classList.remove("show");
+                setTimeout(() => { wrapper.style.display = "none"; speechText.innerHTML = ""; }, 500);
+            } else {
+                playLetterMusic();
+                stopTyping();
+                speechText.innerHTML = "";
+                wrapper.style.display = "flex";
+                setTimeout(() => {
+                    wrapper.classList.add("show");
+                    wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => {
+                        speechBubble.classList.add("show");
+                        setTimeout(() => { isSpeechTyping = true; typeSpeechBubble(speechMessage, 70); }, 400);
+                    }, 600);
+                }, 50);
+            }
+        }
+
+        function createTulip() { const t = document.createElement("div"); t.className = "tulip"; t.innerHTML = "🌹"; t.style.left = Math.random() * 100 + "vw"; t.style.fontSize = (Math.random() * 20 + 18) + "px"; document.body.appendChild(t); setTimeout(() => t.remove(), 6000); }
+        setInterval(createTulip, 900);
+
+        function celebrate() { for (let i = 0; i < 150; i++) { const conf = document.createElement("div"); conf.className = "tulip"; const emojis = ["🎉", "🎊", "🌹", "🌸", "💗"]; conf.innerHTML = emojis[Math.floor(Math.random() * emojis.length)]; conf.style.left = Math.random() * 100 + "vw"; conf.style.fontSize = (Math.random() * 25 + 15) + "px"; conf.style.animationDuration = (Math.random() * 3 + 2) + "s"; document.body.appendChild(conf); setTimeout(() => conf.remove(), 5000); } }
+        
+        updateLockUI();
+    </script>
+</body>
+</html>
